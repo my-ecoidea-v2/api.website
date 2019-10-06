@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Publication;
 use App\Idea;
+use App\Seen;
 use App\Like;
 use App\Favoris;
 use App\Publication_deleted;
@@ -157,7 +158,7 @@ class PublicationController extends Controller
 
     public function getFast(Request $request)
     {
-        $publications = Publication::where('published', true)->get();
+        $publications = Publication::where('published', true)->inRandomOrder()->get();
         foreach($publications as $publication)
         {
             $token = $publication->token;
@@ -178,8 +179,11 @@ class PublicationController extends Controller
             if (Favoris::where('user', JWTAuth::parseToken()->toUser()->id)
             ->where('token', $token)->exists())
             { $publication->isFavoris = 1; } else { $publication->isFavoris = 0; }
+
+            if (Seen::where('user', JWTAuth::parseToken()->toUser()->id)
+            ->where('token', $token)->exists())
+            { $publication->isSeen = 1; } else { $publication->isSeen = 0; }
         }
-        $publications = json_decode(json_encode($publications));
         return response()->json(compact('publications'));
     }
 
@@ -249,5 +253,24 @@ class PublicationController extends Controller
 
             $favoris->delete();
         }
+    }
+
+    public function seen(Request $request)
+    {
+        $token = $request->get('token');
+        $id = JWTAuth::parseToken()->toUser()->id;  
+        
+        if (Publication::where('token', $token)->doesntExist())
+        {
+            return response()->json(["status" => "error", 'error' => 'token_dosentExist']);
+        }
+
+        $seen = new Seen();
+        $seen->user = $id;
+        $seen->token = $token;
+
+        $seen->save();
+
+        return response()->json(["status" => "success"]);
     }
 } 
