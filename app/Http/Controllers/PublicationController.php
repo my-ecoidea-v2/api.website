@@ -6,6 +6,7 @@ use App\User;
 use App\Publication;
 use App\Idea;
 use App\Like;
+use App\Favoris;
 use App\Publication_deleted;
 use App\Http\Controllers\IdeaController;
 use Illuminate\Http\Request;
@@ -20,18 +21,6 @@ class PublicationController extends Controller
 
     public function create(Request $request){
         
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required', 
-        ]); if($validator->fails()){ return response()->json([
-            'status'=>'error',
-            'error' => 'required_user_id'
-        ]); }
-        $validator = Validator::make($request->all(), [
-            'type_id' => 'required', 
-        ]); if($validator->fails()){ return response()->json([
-            'status'=>'error',
-            'error' => 'required_type_id'
-        ]); }
         $validator = Validator::make($request->all(), [
             'anonyme' => 'required', 
         ]); if($validator->fails()){ return response()->json([
@@ -58,10 +47,10 @@ class PublicationController extends Controller
             }
         } else return response()->json(['status'=>'error', 'error'=>'invalid_type']);
 
-        $user = JWTAuth::parseToken()->authenticate();
+        $id = JWTAuth::parseToken()->toUser()->id;   
 
         $publication = new Publication();
-        $publication->user_id = $user  ->get('id');
+        $publication->user_id = $id;
         $publication->type_id = $request  ->get('type_id');
         $publication->anonyme = $request  ->get('anonyme');
 
@@ -76,21 +65,43 @@ class PublicationController extends Controller
     {
         $token = $request->get('token');
         $publication = Publication::where('token', $token)->first();
+
+        if ($publication->published == 0)
+        {
+            if (UserController::getRole(JWTAuth::parseToken()->toUser()) == 0)
+            {
+                return response()->json(["status"=>"error", "error"=>"permission_lost"]);
+            }
+        }
+
         $token = $publication->token;
         if (Idea::where('token', $token)->exists())
         {
             IdeaController::get($publication, $token);
         }
-        return response()->json(json_decode(json_encode($publication)));
+
+        $id = $publication->user_id;
+        $publication->user = User::where('id', $id)->get('name')->first();
+        $publication->likes = Like::where('token', $token)->count();
+        $publication->favoris = Favoris::where('token', $token)->count();
+        
+        if (Like::where('user', JWTAuth::parseToken()->toUser()->id)
+        ->where('token', $token)->exists())
+        { $publication->isLike = 1; } else { $publication->isLike = 0; }
+
+        if (Favoris::where('user', JWTAuth::parseToken()->toUser()->id)
+        ->where('token', $token)->exists())
+        { $publication->isFavoris = 1; } else { $publication->isFavoris = 0; }
     }
 
     public function publish(Request $request){
 
-        $id = $request->get('id');
-        $publication = Publication::where('id', $id)->get()->first();
+        $token = $request->get('token');
+        $publication = Publication::where('token', $token)->get()->first();
+        $id = JWTAuth::parseToken()->toUser()->id;   
 
         $publication->published = true;
-        $publication->acceptBy = $request->get('user_id');
+        $publication->acceptBy = $id;
         $publication->save();
 
         return response()->json(['status' => 'success']);
@@ -98,14 +109,15 @@ class PublicationController extends Controller
 
     public function delete(Request $request){
 
-        $id = $request->get('id');
-        $publication = Publication::where('id', $id)->get()->first();
+        $id = $request->get('token');
+        $publication = Publication::where('token', $token)->get()->first();
+        $id = JWTAuth::parseToken()->toUser()->id;   
 
         $publication_deleted = new Publication_deleted();
-        $publication_deleted->user_id = Publication::where('id', $id)->value('user_id');
-        $publication_deleted->type_id = Publication::where('id', $id)->value('type_id');
-        $publication_deleted->token = Publication::where('id', $id)->value('token');
-        $publication_deleted->deleteBy = $request->get('user_id');
+        $publication_deleted->user_id = Publication::where('token', $token)->value('user_id');
+        $publication_deleted->type_id = Publication::where('token', $token)->value('type_id');
+        $publication_deleted->token = Publication::where('token', $token)->value('token');
+        $publication_deleted->deleteBy = $id;
         $publication_deleted->deleteReason = $request->get('reason');
         $publication_deleted->save();
 
@@ -115,8 +127,8 @@ class PublicationController extends Controller
 
     public function getAll(Request $request)
     {
-        $publications = Publication::all();
-        $publications = json_decode($publications);
+        $publications = Publication::where('published', true)->get();
+
         foreach($publications as $publication)
         {
             $token = $publication->token;
@@ -127,14 +139,17 @@ class PublicationController extends Controller
 
             $id = $publication->user_id;
             $publication->user = User::where('id', $id)->get()->first();
+
             $publication->likes = Like::where('token', $token)->count();
+            $publication->favoris = Favoris::where('token', $token)->count();
+            
             if (Like::where('user', JWTAuth::parseToken()->toUser()->id)
             ->where('token', $token)->exists())
-            {
-                $publication->isLike = 1;
-            } else {
-                $publication->isLike = 0;
-            }
+            { $publication->isLike = 1; } else { $publication->isLike = 0; }
+
+            if (Favoris::where('user', JWTAuth::parseToken()->toUser()->id)
+            ->where('token', $token)->exists())
+            { $publication->isFavoris = 1; } else { $publication->isFavoris = 0; }
         }
         $publications = json_decode(json_encode($publications));
         return response()->json(compact('publications'));
@@ -142,8 +157,7 @@ class PublicationController extends Controller
 
     public function getFast(Request $request)
     {
-        $publications = Publication::all();
-        $publications = json_decode($publications);
+        $publications = Publication::where('published', true)->get();
         foreach($publications as $publication)
         {
             $token = $publication->token;
@@ -155,13 +169,37 @@ class PublicationController extends Controller
             $id = $publication->user_id;
             $publication->user = User::where('id', $id)->get('name')->first();
             $publication->likes = Like::where('token', $token)->count();
+            $publication->favoris = Favoris::where('token', $token)->count();
+            
             if (Like::where('user', JWTAuth::parseToken()->toUser()->id)
             ->where('token', $token)->exists())
+            { $publication->isLike = 1; } else { $publication->isLike = 0; }
+
+            if (Favoris::where('user', JWTAuth::parseToken()->toUser()->id)
+            ->where('token', $token)->exists())
+            { $publication->isFavoris = 1; } else { $publication->isFavoris = 0; }
+        }
+        $publications = json_decode(json_encode($publications));
+        return response()->json(compact('publications'));
+    }
+
+    public function getModeration(Request $request)
+    {
+        if (UserController::getRole(JWTAuth::parseToken()->toUser()) == 0)
+        {
+            return response()->json(["status"=>"error", "error"=>"permission_lost"]);
+        }
+        $publications = Publication::where('published', false)->get();
+        foreach($publications as $publication)
+        {
+            $token = $publication->token;
+            if (Idea::where('token', $token)->exists())
             {
-                $publication->isLike = 1;
-            } else {
-                $publication->isLike = 0;
+                IdeaController::getFast($publication, $token);
             }
+
+            $id = $publication->user_id;
+            $publication->user = User::where('id', $id)->get('name')->first();
         }
         $publications = json_decode(json_encode($publications));
         return response()->json(compact('publications'));
@@ -181,6 +219,35 @@ class PublicationController extends Controller
             $like->token = $token;
 
             $like->save();
+        } else {
+            $like = Like::where('user', $id)
+            ->where('token', $token)
+            ->get()->first();
+
+            $like->delete();
+        }
+    }
+
+    public function favoris(Request $request)
+    {
+        $token = $request->get('token');
+        $id = JWTAuth::parseToken()->toUser()->id;     
+
+        if(Favoris::where('user', $id)
+        ->where('token', $token)
+        ->doesntExist())
+        {
+            $favoris = new Favoris();
+            $favoris->user = $id;
+            $favoris->token = $token;
+
+            $favoris->save();
+        } else {
+            $favoris = Favoris::where('user', $id)
+            ->where('token', $token)
+            ->get()->first();
+
+            $favoris->delete();
         }
     }
 } 
