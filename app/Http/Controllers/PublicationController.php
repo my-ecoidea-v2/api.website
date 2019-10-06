@@ -21,18 +21,6 @@ class PublicationController extends Controller
     public function create(Request $request){
         
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required', 
-        ]); if($validator->fails()){ return response()->json([
-            'status'=>'error',
-            'error' => 'required_user_id'
-        ]); }
-        $validator = Validator::make($request->all(), [
-            'type_id' => 'required', 
-        ]); if($validator->fails()){ return response()->json([
-            'status'=>'error',
-            'error' => 'required_type_id'
-        ]); }
-        $validator = Validator::make($request->all(), [
             'anonyme' => 'required', 
         ]); if($validator->fails()){ return response()->json([
             'status'=>'error',
@@ -58,10 +46,10 @@ class PublicationController extends Controller
             }
         } else return response()->json(['status'=>'error', 'error'=>'invalid_type']);
 
-        $user = JWTAuth::parseToken()->authenticate();
+        $id = JWTAuth::parseToken()->toUser()->id;   
 
         $publication = new Publication();
-        $publication->user_id = $user  ->get('id');
+        $publication->user_id = $id;
         $publication->type_id = $request  ->get('type_id');
         $publication->anonyme = $request  ->get('anonyme');
 
@@ -86,11 +74,12 @@ class PublicationController extends Controller
 
     public function publish(Request $request){
 
-        $id = $request->get('id');
-        $publication = Publication::where('id', $id)->get()->first();
+        $id = $request->get('token');
+        $publication = Publication::where('token', $token)->get()->first();
+        $id = JWTAuth::parseToken()->toUser()->id;   
 
         $publication->published = true;
-        $publication->acceptBy = $request->get('user_id');
+        $publication->acceptBy = $id;
         $publication->save();
 
         return response()->json(['status' => 'success']);
@@ -98,14 +87,15 @@ class PublicationController extends Controller
 
     public function delete(Request $request){
 
-        $id = $request->get('id');
-        $publication = Publication::where('id', $id)->get()->first();
+        $id = $request->get('token');
+        $publication = Publication::where('token', $token)->get()->first();
+        $id = JWTAuth::parseToken()->toUser()->id;   
 
         $publication_deleted = new Publication_deleted();
-        $publication_deleted->user_id = Publication::where('id', $id)->value('user_id');
-        $publication_deleted->type_id = Publication::where('id', $id)->value('type_id');
-        $publication_deleted->token = Publication::where('id', $id)->value('token');
-        $publication_deleted->deleteBy = $request->get('user_id');
+        $publication_deleted->user_id = Publication::where('token', $token)->value('user_id');
+        $publication_deleted->type_id = Publication::where('token', $token)->value('type_id');
+        $publication_deleted->token = Publication::where('token', $token)->value('token');
+        $publication_deleted->deleteBy = $id;
         $publication_deleted->deleteReason = $request->get('reason');
         $publication_deleted->save();
 
