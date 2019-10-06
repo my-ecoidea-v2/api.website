@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\PEco_idea;
+use App\Idea;
 use App\Keywords;
 use App\Links;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class PEco_IdeaController extends Controller
+class IdeaController extends Controller
 {   
     public static function create(Request $request, $token)
     {
@@ -43,7 +43,7 @@ class PEco_IdeaController extends Controller
             'status'=>'error',
             'error' => 'required_texte']); }
 
-        $idea = new PEco_Idea();
+        $idea = new Idea();
         $idea->token = $token;
         $idea->description = $request   ->get('description');
         $idea->categorie_id = $request     ->get('categorie_id');
@@ -89,7 +89,7 @@ class PEco_IdeaController extends Controller
     }
     public static function get($publication, $token)
     {
-        $idea = PEco_Idea::where('token', $token)->get()->first();
+        $idea = Idea::where('token', $token)->get()->first();
         $idea->keywords = Keywords::where('token', $token)->get();
         if (!Links::where('token', $token)->doesntExist())
         {
@@ -97,5 +97,13 @@ class PEco_IdeaController extends Controller
         }
         $publication->content = $idea;
         unset($publication->content->token);
+    }
+    public static function getFast($publication, $token)
+    {
+        $idea = Idea::where('token', $token)->get()->first();
+        $publication->content = $idea;
+        unset($publication->content->token);
+        unset($publication->content->categorie_id);
+        unset($publication->content->texte);
     }
 }

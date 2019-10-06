@@ -13,7 +13,7 @@
 [api/publication/get]
 [api/publication/getAll]
 
-[api/register]
+[api/register] 
 ## Création d'un utilisateur
 > request type : json
 > method : post
