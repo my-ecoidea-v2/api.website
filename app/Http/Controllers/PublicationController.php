@@ -181,6 +181,12 @@ class PublicationController extends Controller
             $like->token = $token;
 
             $like->save();
+        } else {
+            $like = Like::where('user', $id)
+            ->where('token', $token)
+            ->get()->first();
+
+            $like->delete();
         }
     }
 } 

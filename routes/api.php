@@ -25,5 +25,5 @@ Route::group(['middleware' => ['jwt.verify']], function()
     Route::get('publication/getAll', 'PublicationController@getAll');
     Route::get('publication/getFast', 'PublicationController@getFast');
 
-    Route::get('publication/interact/like', 'PublicationController@like');
+    Route::put('publication/interact/like', 'PublicationController@like');
 });
