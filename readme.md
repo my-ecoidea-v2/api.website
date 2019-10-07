@@ -4,10 +4,12 @@ L'api du site [my-ecoidea.org](https://my-ecoidea.org), créer par quentin
 ## Utilisateurs
 ### Création /user/create/
 
-What things you need to install the software and how to install them
-
 ```
-Give examples
+Type : POST
+Champs :
+* Test
+* est
+
 ```
 
 ### Installing
