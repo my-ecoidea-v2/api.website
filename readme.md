@@ -1,153 +1,221 @@
-# Api.My-EcoIdea.org Documentation
+# My-EcoIdea-v2 API
+L'api du site [my-ecoidea.org](https://my-ecoidea.org), créer par quentin
 
-### All features resume ###
-[api/user/register]
-[api/user/login]
-[api/user/logout]
-[api/user/modify]
-[api/user/delete]
-[api/user/get]
-[api/publication/create]
-[api/publication/publish]
-[api/publication/delete]
-[api/publication/get]
-[api/publication/getAll]
+## Variables générales
+Les rôles
+```
+[1] Administrateur
+[2] Modérateur
+[3] Officiel
+[4] Soutien
+```
+Les utilisateurs
+```
+id
+name
+email
+avatar
+role
+muted
+muted_reason
+banned
+banned_reason
+```
+Les Eco-Idées
+```
+id
+token
+description
+texte
+keywords
+links
+```
+Les Eco-Slogan
+```
+id
+token
+texte
+```
 
-[api/register] 
-## Création d'un utilisateur
-> request type : json
-> method : post
-> fields :
-- 'name' required | max:75
-- 'key' //clés bêta
-- 'email' required | max:191
-- 'password' required | min :6
-- 'password_confirmation' required |
-return :
-- 'status':'success/error'
-- 'token':'[user_token]', 'user' :'[user_informations]'
-- 'error :'[error_description]
+## Utilisateurs
+### Inscription /user/create/
 
-[api/login]
-## Connexion d'un utilisateur
-> request type : json
-> method : post
-> fields :
-- 'email' required | max:191
-- 'password' required | min :6
-return :
-- 'status':'success/error'
-- 'token':'[user_token]', 'user' :'[user_informations]'
-- 'error :'[error_description]
+```
+Type : POST
+Champs :
+- name
+- email
+- key
+- password
+- password_confirmation
+Réponse :
+- user
+- token
+```
+### Connexion /user/login/
 
-[api/logout]
-## Déconnexion d'un utilisateur
-> request type : json
-> method : post
-> authorisation :
-- Bearer token
-return :
-- 'status':'success/error'
+```
+Type : POST
+Champs :
+- email
+- password
+Réponse :
+- user
+- token
+```
+### Récupération des informations /user/get/
 
-[api/user]
-## Récupération d'informations sur un utilisateur
-> request type : json
-> method : get
-> authorisation :
-- Bearer token
-return :
-- 'status':'success/error'
-- 'user':'[user_information]'
+```
+Type : GET
+Authorisation : Bearer token
+Réponse :
+- user
+```
+### Connexion /user/modify/
 
-[api/modify]
-## Modification des informations du profil utilisateur
-> request type : json
-> method : put
-> authorisation :
-- Bearer token
-> fields :
-- 'password' required
-- 'new_name'
-- 'new_email'
-- 'new_password'
-return :
-- 'status':'success/error'
-- 'user':'[user_information]
+```
+Type : PUT
+Authorisation : Bearer token
+Champs :
+- name
+- email
+- password
+Réponse :
+- user
+```
+### Supression /user/delete/
 
-[api/delete]
-## Suppression de son profil
-> request type : json
-> method : delete
-> authorisation :
-- Bearer token
-> fields : 
-- 'password' required
-return :
-- 'status':'success/error'
+```
+Type : DELETE
+Authorisation : Bearer token
+Champs :
+- password
+```
+### Déconnection /user/logout/
 
-[api/publication/create]
-## Permet de créer une publication
-> request type : json
-> method : post
-> authorisation :
-- User Bearer token
-> fields : 
-- user_id required
-- type_id required [1(idée)]
-- anonyme required
-### If type == 1
-- description required
-- keyword_1 required
-- keyword_2 required
-- keyword_3 required
-- categorie_id required
-- texte required
-- link_1
-- link_2
-- link_3
+```
+Type : POST
+Authorisation : Bearer token
+```
+### Récuperer Mes Favoris /user/meFavoris/
 
-[api/publication/publish]
-## Publie une idée dans le fil d'actualité (acceptation d'idée)
-> request type : json
-> method : post
-> authorisation :
-- User Bearer token
-> fields
-- id required [publication_id]
-- acceptBy required [user_id]
+```
+Type : GET
+Authorisation : Bearer token
+```
+### Récuperer Mes Idées /user/meIdea/
 
-[api/publication/delete]
-## Supprimer une publication
-> request type : json
-> method : post
-> authorisation :
-- User Bearer token
-> fields :
-- id
+```
+Type : GET
+Authorisation : Bearer token
+```
+## Publications
+### Créer /publication/create/
 
-[api/publication/get]
-## Récupère les informations d'une publication
-> request type : json
-> method : post
-> authorisation :
-- Publication Bearer token
+```
+Type : POST
+Authorisation : Bearer token
+Champs :
+- type
+- anonyme (boolean)
+Réponse :
+- error or success
+```
+Pour le type = 1, Eco-Idée
+```
+Champs :
+- description
+- texte
+- keyword_1
+- keyword_2
+- keyword_3
+* link_1
+* link_2
+* link_3
+```
+Pour le type = 2, Eco-Slogan
+```
+Champs :
+- texte
+```
+### Publier /publication/publish/
 
-[api/publication/getAll]
-## Récupère les informations de toutes les publication
-> request type : json
-> method : post
-> authorisation :
-- User Bearer token
+```
+Type : PUT
+Authorisation : Bearer token + R[2]
+Champs :
+- token
+Réponse :
+- error or success
+```
+### Supprimer /publication/delete/
 
-## User rôles
-[0] Member
-[1] Tester
-[2] Supporter
-[3] Moderator
-[4] Administrator
+```
+Type : DELETE
+Authorisation : Bearer token
+Champs :
+- reason
+Réponse :
+- error or success
+```
+### Récupérer par token /publication/get/
 
-## Error structure
-[required] The field is empty but is required by the databse
-[invalid] The field is invalid for the database, mayby too long/short, or invalid sytaxe
-[used] The field is already used in database but it can by duplicated
-[bad] The field don't match with the database value
+```
+Type : GET
+Authorisation : Bearer token
+Champs :
+- token
+Réponse :
+- error or success
+- publication
+```
+### Fil d'actualité /publication/getFast/
+
+```
+Type : GET
+Authorisation : Bearer token
+Réponse :
+- publications
+```
+### Fil de modération /publication/getModeration/
+
+```
+Type : GET
+Authorisation : Bearer token + R[2]
+Réponse :
+- publications
+```
+### Rechercher /publication/search/
+
+```
+Type : GET
+Authorisation : Bearer token
+Réponse :
+- awser
+```
+
+## Les intéractions
+### Like /publication/like/
+
+```
+Type : PUT
+Authorisation : Bearer token
+Réponse :
+- token
+```
+### Favoris /publication/favoris/
+
+```
+Type : PUT
+Authorisation : Bearer token
+Réponse :
+- token
+```
+### Vu /publication/seen/
+
+```
+Type : PUT
+Authorisation : Bearer token
+Réponse :
+- token
+```

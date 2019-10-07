@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Config;
 use App\UserKey;
+use App\Like;
+use App\Favoris;
+use App\Idea;
+use App\Publication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -273,5 +277,76 @@ class UserController extends Controller
             return response()->json(['token_absent'], $e->getStatusCode());
         }
         return response()->json(compact('user'));
+    }
+
+    public static function getRole($user)
+    {
+        $role = $user->role;
+        if ($role == 1|| $role == 2 || $role == 3)
+        {
+            return 1;
+        } else { return 0; }
+    }
+
+    public function meIdea(Request $request)
+    {
+        $id = JWTAuth::parseToken()->toUser()->id;
+        
+        $publications = Publication::where('user_id', $id)->get();
+
+        foreach($publications as $publication)
+        {
+            $token = $publication->token;
+            if (Idea::where('token', $token)->exists())
+            {
+                IdeaController::getFast($publication, $token);
+            }
+
+            $id = $publication->user_id;
+            $publication->likes = Like::where('token', $token)->count();
+            $publication->favoris = Favoris::where('token', $token)->count();
+            
+            if (Like::where('user', JWTAuth::parseToken()->toUser()->id)
+            ->where('token', $token)->exists())
+            { $publication->isLike = 1; } else { $publication->isLike = 0; }
+
+            if (Favoris::where('user', JWTAuth::parseToken()->toUser()->id)
+            ->where('token', $token)->exists())
+            { $publication->isFavoris = 1; } else { $publication->isFavoris = 0; }
+        }
+        $publications = json_decode(json_encode($publications));
+        return response()->json(compact('publications'));
+    }
+
+    public function meFavoris(Request $request)
+    {
+        $id = JWTAuth::parseToken()->toUser()->id;
+        
+        $favoris = Favoris::where('user', $id)->get();
+
+        foreach($favoris as $token)
+        {
+            $publication = Publication::where('token', $token->token)->first();
+            if (Idea::where('token', $token->token)->exists())
+            {
+                $idea = Idea::where('token', $token->token)->get()->first();
+                
+                $publication->likes = Like::where('token', $token)->count();
+                $publication->favoris = Favoris::where('token', $token)->count();
+                
+                if (Like::where('user', JWTAuth::parseToken()->toUser()->id)
+                ->where('token', $token)->exists())
+                { $publication->isLike = 1; } else { $publication->isLike = 0; }
+    
+                if (Favoris::where('user', JWTAuth::parseToken()->toUser()->id)
+                ->where('token', $token)->exists())
+                { $publication->isFavoris = 1; } else { $publication->isFavoris = 0; }
+                $publication->content = $idea;
+                unset($publication->content->token);
+            }
+            unset($token->token);
+            $token->idea = $publication;
+        }
+        return response()->json(compact('favoris'));
     }
 }
