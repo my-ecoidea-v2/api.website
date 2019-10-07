@@ -134,10 +134,27 @@ Réponse :
 ### Récupérer par token /publication/get/
 
 ```
-Type : POST
+Type : GET
 Authorisation : Bearer token
 Champs :
 - token
 Réponse :
 - error or success
+- publication
+```
+### Fil d'actualité /publication/getFast/
+
+```
+Type : GET
+Authorisation : Bearer token
+Réponse :
+- publications
+```
+### Fil de modération /publication/getModeration/
+
+```
+Type : GET
+Authorisation : Bearer token + 
+Réponse :
+- publications
 ```

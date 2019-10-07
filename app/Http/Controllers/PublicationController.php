@@ -90,7 +90,8 @@ class PublicationController extends Controller
 
         if ($publication->published == 0)
         {
-            if (UserController::getRole(JWTAuth::parseToken()->toUser()) == 0)
+            if (UserController::getRole(JWTAuth::parseToken()->toUser()) != 1
+            || UserController::getRole(JWTAuth::parseToken()->toUser()) != 2)
             {
                 return response()->json(["status"=>"error", "error"=>"permission_lost"]);
             }
