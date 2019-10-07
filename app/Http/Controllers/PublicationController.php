@@ -122,8 +122,6 @@ class PublicationController extends Controller
         $publication->acceptBy = $id;
         $publication->save();
 
-
-
         return response()->json(['status' => 'success']);
     }
 

@@ -111,11 +111,31 @@ Pour le type = 2, Eco-Slogan
 Champs :
 - texte
 ```
-### Publier une publication /publication/publish/
+### Publier /publication/publish/
 
 ```
 Type : PUT
 Authorisation : Bearer token + R[2]
+Champs :
+- token
+Réponse :
+- error or success
+```
+### Supprimer /publication/delete/
+
+```
+Type : DELETE
+Authorisation : Bearer token
+Champs :
+- reason
+Réponse :
+- error or success
+```
+### Récupérer par token /publication/get/
+
+```
+Type : POST
+Authorisation : Bearer token
 Champs :
 - type
 - anonyme (boolean)
