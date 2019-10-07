@@ -1,153 +1,83 @@
-# Api.My-EcoIdea.org Documentation
+# My-EcoIdea-v2 API
+L'api du site [my-ecoidea.org](https://my-ecoidea.org), créer par quentin
 
-### All features resume ###
-[api/user/register]
-[api/user/login]
-[api/user/logout]
-[api/user/modify]
-[api/user/delete]
-[api/user/get]
-[api/publication/create]
-[api/publication/publish]
-[api/publication/delete]
-[api/publication/get]
-[api/publication/getAll]
+## Utilisateurs
+### Création /user/create/
 
-[api/register] 
-## Création d'un utilisateur
-> request type : json
-> method : post
-> fields :
-- 'name' required | max:75
-- 'key' //clés bêta
-- 'email' required | max:191
-- 'password' required | min :6
-- 'password_confirmation' required |
-return :
-- 'status':'success/error'
-- 'token':'[user_token]', 'user' :'[user_informations]'
-- 'error :'[error_description]
+What things you need to install the software and how to install them
 
-[api/login]
-## Connexion d'un utilisateur
-> request type : json
-> method : post
-> fields :
-- 'email' required | max:191
-- 'password' required | min :6
-return :
-- 'status':'success/error'
-- 'token':'[user_token]', 'user' :'[user_informations]'
-- 'error :'[error_description]
+```
+Give examples
+```
 
-[api/logout]
-## Déconnexion d'un utilisateur
-> request type : json
-> method : post
-> authorisation :
-- Bearer token
-return :
-- 'status':'success/error'
+### Installing
 
-[api/user]
-## Récupération d'informations sur un utilisateur
-> request type : json
-> method : get
-> authorisation :
-- Bearer token
-return :
-- 'status':'success/error'
-- 'user':'[user_information]'
+A step by step series of examples that tell you how to get a development env running
 
-[api/modify]
-## Modification des informations du profil utilisateur
-> request type : json
-> method : put
-> authorisation :
-- Bearer token
-> fields :
-- 'password' required
-- 'new_name'
-- 'new_email'
-- 'new_password'
-return :
-- 'status':'success/error'
-- 'user':'[user_information]
+Say what the step will be
 
-[api/delete]
-## Suppression de son profil
-> request type : json
-> method : delete
-> authorisation :
-- Bearer token
-> fields : 
-- 'password' required
-return :
-- 'status':'success/error'
+```
+Give the example
+```
 
-[api/publication/create]
-## Permet de créer une publication
-> request type : json
-> method : post
-> authorisation :
-- User Bearer token
-> fields : 
-- user_id required
-- type_id required [1(idée)]
-- anonyme required
-### If type == 1
-- description required
-- keyword_1 required
-- keyword_2 required
-- keyword_3 required
-- categorie_id required
-- texte required
-- link_1
-- link_2
-- link_3
+And repeat
 
-[api/publication/publish]
-## Publie une idée dans le fil d'actualité (acceptation d'idée)
-> request type : json
-> method : post
-> authorisation :
-- User Bearer token
-> fields
-- id required [publication_id]
-- acceptBy required [user_id]
+```
+until finished
+```
 
-[api/publication/delete]
-## Supprimer une publication
-> request type : json
-> method : post
-> authorisation :
-- User Bearer token
-> fields :
-- id
+End with an example of getting some data out of the system or using it for a little demo
 
-[api/publication/get]
-## Récupère les informations d'une publication
-> request type : json
-> method : post
-> authorisation :
-- Publication Bearer token
+## Running the tests
 
-[api/publication/getAll]
-## Récupère les informations de toutes les publication
-> request type : json
-> method : post
-> authorisation :
-- User Bearer token
+Explain how to run the automated tests for this system
 
-## User rôles
-[0] Member
-[1] Tester
-[2] Supporter
-[3] Moderator
-[4] Administrator
+### Break down into end to end tests
 
-## Error structure
-[required] The field is empty but is required by the databse
-[invalid] The field is invalid for the database, mayby too long/short, or invalid sytaxe
-[used] The field is already used in database but it can by duplicated
-[bad] The field don't match with the database value
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+### And coding style tests
+
+Explain what these tests test and why
+
+```
+Give an example
+```
+
+## Deployment
+
+Add additional notes about how to deploy this on a live system
+
+## Built With
+
+* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
+* [Maven](https://maven.apache.org/) - Dependency Management
+* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+
+## Contributing
+
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+
+## Authors
+
+* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+
+See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* Hat tip to anyone whose code was used
+* Inspiration
+* etc
