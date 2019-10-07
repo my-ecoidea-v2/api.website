@@ -97,6 +97,10 @@ class PublicationController extends Controller
         {
             IdeaController::get($publication, $token);
         }
+        if (Slogan::where('token', $token)->exists())
+        {
+            SloganController::get($publication, $token);
+        }
 
         $id = $publication->user_id;
         $publication->user = User::where('id', $id)->get('name')->first();
