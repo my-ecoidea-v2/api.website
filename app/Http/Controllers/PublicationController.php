@@ -67,6 +67,11 @@ class PublicationController extends Controller
         $publication->type_id = $request  ->get('type');
         $publication->anonyme = $request  ->get('anonyme');
 
+        if (UserController::getRole(JWTAuth::parseToken()->toUser()) == 3)
+        {
+            $publication->published = true;
+        }
+
         $publication->token = $token;
 
         $publication->save();
@@ -207,7 +212,8 @@ class PublicationController extends Controller
 
     public function getModeration(Request $request)
     {
-        if (UserController::getRole(JWTAuth::parseToken()->toUser()) == 0)
+        if (UserController::getRole(JWTAuth::parseToken()->toUser()) != 1
+        || UserController::getRole(JWTAuth::parseToken()->toUser()) != 2)
         {
             return response()->json(["status"=>"error", "error"=>"permission_lost"]);
         }
