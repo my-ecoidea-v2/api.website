@@ -34,5 +34,4 @@ Route::group(['middleware' => ['jwt.verify']], function()
     Route::get('user/meIdea', 'UserController@meIdea');
 
     Route::get('publication/search', 'PublicationSearchController@search');
-
 });
