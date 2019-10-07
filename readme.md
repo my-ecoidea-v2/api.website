@@ -9,6 +9,33 @@ Les rôles
 [3] Officiel
 [4] Soutien
 ```
+Les utilisateurs
+```
+id
+name
+email
+avatar
+role
+muted
+muted_reason
+banned
+banned_reason
+```
+Les Eco-Idées
+```
+id
+token
+description
+texte
+keywords
+links
+```
+Les Eco-Slogan
+```
+id
+token
+texte
+```
 
 ## Utilisateurs
 ### Inscription /user/create/
@@ -154,7 +181,41 @@ Réponse :
 
 ```
 Type : GET
-Authorisation : Bearer token + 
+Authorisation : Bearer token + R[2]
 Réponse :
 - publications
+```
+### Rechercher /publication/search/
+
+```
+Type : GET
+Authorisation : Bearer token
+Réponse :
+- awser
+```
+
+## Les intéractions
+### Like /publication/like/
+
+```
+Type : PUT
+Authorisation : Bearer token
+Réponse :
+- token
+```
+### Favoris /publication/favoris/
+
+```
+Type : PUT
+Authorisation : Bearer token
+Réponse :
+- token
+```
+### Vu /publication/seen/
+
+```
+Type : PUT
+Authorisation : Bearer token
+Réponse :
+- token
 ```
