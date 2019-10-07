@@ -137,8 +137,7 @@ Réponse :
 Type : POST
 Authorisation : Bearer token
 Champs :
-- type
-- anonyme (boolean)
+- token
 Réponse :
 - error or success
 ```

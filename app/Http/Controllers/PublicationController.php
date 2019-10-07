@@ -82,6 +82,10 @@ class PublicationController extends Controller
     public function get(Request $request)
     {
         $token = $request->get('token');
+        if (Publication::where('token', $token)->doesntExist())
+        {
+            return response()->json(['status'=>'error','error'=>'invalid']);
+        }
         $publication = Publication::where('token', $token)->first();
 
         if ($publication->published == 0)
@@ -114,6 +118,8 @@ class PublicationController extends Controller
         if (Favoris::where('user', JWTAuth::parseToken()->toUser()->id)
         ->where('token', $token)->exists())
         { $publication->isFavoris = 1; } else { $publication->isFavoris = 0; }
+
+        return response()->json(compact('publication'));
     }
 
     public function publish(Request $request){
