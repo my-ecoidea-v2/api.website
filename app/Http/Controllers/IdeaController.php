@@ -46,7 +46,7 @@ class IdeaController extends Controller
         $idea = new Idea();
         $idea->token = $token;
         $idea->description = $request   ->get('description');
-        $idea->categorie_id = $request     ->get('categorie_id');
+        // $idea->categorie_id = $request     ->get('categorie');
         $idea->texte = $request         ->get('texte');
 
         $keyword = new Keywords();

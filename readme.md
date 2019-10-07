@@ -1,85 +1,124 @@
 # My-EcoIdea-v2 API
 L'api du site [my-ecoidea.org](https://my-ecoidea.org), créer par quentin
 
+## Variables générales
+Les rôles
+```
+[1] Administrateur
+[2] Modérateur
+[3] Officiel
+[4] Soutien
+```
+
 ## Utilisateurs
-### Création /user/create/
+### Inscription /user/create/
 
 ```
 Type : POST
 Champs :
-* Test
-* est
+- name
+- email
+- key
+- password
+- password_confirmation
+Réponse :
+- user
+- token
+```
+### Connexion /user/login/
 
 ```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+Type : POST
+Champs :
+- email
+- password
+Réponse :
+- user
+- token
+```
+### Récupération des informations /user/get/
 
 ```
-Give the example
+Type : GET
+Authorisation : Bearer token
+Réponse :
+- user
 ```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+### Connexion /user/modify/
 
 ```
-Give an example
+Type : PUT
+Authorisation : Bearer token
+Champs :
+- name
+- email
+- password
+Réponse :
+- user
 ```
-
-### And coding style tests
-
-Explain what these tests test and why
+### Supression /user/delete/
 
 ```
-Give an example
+Type : DELETE
+Authorisation : Bearer token
+Champs :
+- password
 ```
+### Déconnection /user/logout/
 
-## Deployment
+```
+Type : POST
+Authorisation : Bearer token
+```
+### Récuperer Mes Favoris /user/meFavoris/
 
-Add additional notes about how to deploy this on a live system
+```
+Type : GET
+Authorisation : Bearer token
+```
+### Récuperer Mes Idées /user/meIdea/
 
-## Built With
+```
+Type : GET
+Authorisation : Bearer token
+```
+## Publications
+### Créer /publication/create/
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+```
+Type : POST
+Authorisation : Bearer token
+Champs :
+- type
+- anonyme (boolean)
+Réponse :
+- error or success
+```
+Pour le type = 1, Eco-Idée
+```
+Champs :
+- description
+- texte
+- keyword_1
+- keyword_2
+- keyword_3
+* link_1
+* link_2
+* link_3
+```
+Pour le type = 2, Eco-Slogan
+```
+Champs :
+- texte
+```
+### Publier une publication /publication/publish/
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+```
+Type : PUT
+Authorisation : Bearer token + R[2]
+Champs :
+- type
+- anonyme (boolean)
+Réponse :
+- error or success
+```
