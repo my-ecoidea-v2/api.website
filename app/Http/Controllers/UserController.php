@@ -349,4 +349,42 @@ class UserController extends Controller
         }
         return response()->json(compact('favoris'));
     }
+
+    public function mePublications(Request $request)
+    {
+        $id = JWTAuth::parseToken()->toUser()->id;
+        
+        $publications = Publication::where('user', $id)->get();
+
+        foreach($publications as $publication)
+        {
+            $token = $publication->token;
+            if (Idea::where('token', $token)->exists())
+            {
+                IdeaController::getFast($publication, $token);
+            }
+            if (Slogan::where('token', $token)->exists())
+            {
+                SloganController::get($publication, $token);
+            }
+
+            $id = $publication->user_id;
+            $publication->user = User::where('id', $id)->get('name')->first();
+            $publication->likes = Like::where('token', $token)->count();
+            $publication->favoris = Favoris::where('token', $token)->count();
+            
+            if (Like::where('user', JWTAuth::parseToken()->toUser()->id)
+            ->where('token', $token)->exists())
+            { $publication->isLike = 1; } else { $publication->isLike = 0; }
+
+            if (Favoris::where('user', JWTAuth::parseToken()->toUser()->id)
+            ->where('token', $token)->exists())
+            { $publication->isFavoris = 1; } else { $publication->isFavoris = 0; }
+
+            if (Seen::where('user', JWTAuth::parseToken()->toUser()->id)
+            ->where('token', $token)->exists())
+            { $publication->isSeen = 1; } else { $publication->isSeen = 0; }
+        }
+        return response()->json(compact('publications'));
+    }
 }
