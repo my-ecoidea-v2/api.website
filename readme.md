@@ -109,6 +109,12 @@ Authorisation : Bearer token
 Type : GET
 Authorisation : Bearer token
 ```
+### Récuperer Mes Publications /user/mePublications/
+
+```
+Type : GET
+Authorisation : Bearer token
+```
 ## Publications
 ### Créer /publication/create/
 
@@ -218,4 +224,15 @@ Type : PUT
 Authorisation : Bearer token
 Réponse :
 - token
+```
+## Autres
+### Retour bêta /retour-beta/
+
+```
+Type : POST
+Authorisation : Bearer token
+Field :
+- texte
+Réponse :
+- error or success
 ```

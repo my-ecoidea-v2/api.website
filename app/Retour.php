@@ -4,8 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Config extends Model
+class Retour extends Model
 {
-    public $table = 'config';
     public $timestamps = false;
 }

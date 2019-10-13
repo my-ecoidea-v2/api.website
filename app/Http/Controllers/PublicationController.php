@@ -30,11 +30,11 @@ class PublicationController extends Controller
             'error' => 'required_anonyme'
         ]); }
 
-        $token = str_random(250);
+        $token = str_random(50);
         $validator = Validator::make($request->all(), [
             'token' => 'unique', 
         ]); while($validator->fails()){ 
-            $token = str_random(250);
+            $token = str_random(50);
         }
 
         $type = $request->get('type');
