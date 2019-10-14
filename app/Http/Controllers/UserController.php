@@ -24,10 +24,10 @@ class UserController extends Controller
 
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_email_or_password'], 400);
+                return response()->json(['status'=>'error','error' => 'invalid_email_or_password']);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token, contact administrator'], 500);
+            return response()->json(['status'=>'error','error' => 'could_not_create_token, contact administrator'], 500);
         }
         
         if (Config::where('config', 'keysRequired')->get()->first()['value'] == 1)
