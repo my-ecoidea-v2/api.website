@@ -32,11 +32,11 @@ class IdeaController extends Controller
         ]); if($validator->fails()){ return response()->json([
             'status'=>'error',
             'error' => 'required_keyword_3']); }
-        $validator = Validator::make($request->all(), [
-            'categorie_id' => 'required', 
-        ]); if($validator->fails()){ return response()->json([
-            'status'=>'error',
-            'error' => 'required_categorie_id']); }
+        // $validator = Validator::make($request->all(), [
+        //     'categorie_id' => 'required', 
+        // ]); if($validator->fails()){ return response()->json([
+        //     'status'=>'error',
+        //     'error' => 'required_categorie_id']); }
         $validator = Validator::make($request->all(), [
             'texte' => 'required', 
         ]); if($validator->fails()){ return response()->json([

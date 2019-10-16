@@ -27,7 +27,7 @@ class UserController extends Controller
                 return response()->json(['status'=>'error','error' => 'invalid_email_or_password']);
             }
         } catch (JWTException $e) {
-            return response()->json(['status'=>'error','error' => 'could_not_create_token, contact administrator'], 500);
+            return response()->json(['status'=>'error','error' => 'could_not_create_token']);
         }
         
         if (Config::where('config', 'keysRequired')->get()->first()['value'] == 1)
