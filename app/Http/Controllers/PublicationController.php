@@ -11,6 +11,7 @@ use App\Slogan;
 use App\Favoris;
 use App\Publication_deleted;
 use App\Http\Controllers\IdeaController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -30,11 +31,11 @@ class PublicationController extends Controller
             'error' => 'required_anonyme'
         ]); }
 
-        $token = str_random(50);
+        $token = str_random(12);
         $validator = Validator::make($request->all(), [
             'token' => 'unique', 
         ]); while($validator->fails()){ 
-            $token = str_random(50);
+            $token = str_random(12);
         }
 
         $type = $request->get('type');

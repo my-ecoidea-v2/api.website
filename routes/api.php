@@ -21,7 +21,7 @@ Route::group(['middleware' => ['jwt.verify']], function()
     Route::put('publication/publish', 'PublicationController@publish');
     Route::delete('publication/delete', 'PublicationController@delete');
     
-    Route::get('publication/get', 'PublicationController@get');
+    Route::post('publication/get', 'PublicationController@get');
     // Route::get('publication/getAll', 'PublicationController@getAll');
     Route::get('publication/getFast', 'PublicationController@getFast');
     Route::get('publication/getModeration', 'PublicationController@getModeration');
